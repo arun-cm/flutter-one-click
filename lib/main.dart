@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:oneclick/CustomAppBar.dart';
+import 'package:oneclick/ItemList.dart';
 
 import 'CustomShapeClipper.dart';
 
@@ -28,6 +29,9 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomNavigationBar(), // CustomAppBar(),
+      endDrawer: new Drawer(
+        elevation: 20.0,
+      ),
 
       /// to fix : bottom overflowed issue
       /// todo
@@ -49,7 +53,16 @@ class _SearchState extends State<Search> {
   var searchQuery = "";
   var isVegetable = true;
 
-  void onSearch(query) {}
+  var _searchQuery = "";
+
+  void onSearch(String query, {bool isForced = false}) {
+    this._searchQuery = query;
+
+    if (query.length > 7 || isForced) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ItemsListing()));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +130,12 @@ class _SearchState extends State<Search> {
                               ],
                         ),
                         Spacer(),
-                        Icon(Icons.settings, color: Colors.white)
+                        InkWell(
+                          child: Icon(Icons.settings, color: Colors.white),
+                          onTap: () {
+                            Scaffold.of(context).openEndDrawer();
+                          },
+                        )
                       ],
                     ),
                   ),
@@ -125,7 +143,8 @@ class _SearchState extends State<Search> {
                     height: 50.0,
                   ),
                   Text(
-                    "What do you\nwant to buy today?",
+                    //"What do you\nwant to buy today?",
+                    "നിങ്ങൾ ഇന്ന് എന്താണ്\nവാങ്ങാൻ ഉദ്ദേശിക്കുന്നത്",
                     style: TextStyle(fontSize: 24.0, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -154,9 +173,19 @@ class _SearchState extends State<Search> {
                           suffixIcon: Padding(
                             padding:
                                 const EdgeInsetsDirectional.only(start: 0.0),
-                            child: Icon(
-                              Icons.search,
-                              color: Colors.black,
+                            child: InkWell(
+                              child: Icon(
+                                Icons.search,
+                                color: Colors.black,
+                              ),
+                              onTap: () {
+                                // how to directly access textbox value here
+                                // todo
+                                // define controller outside and dispose it
+                                // dispose controller inline vs outside ?
+                                // define a varible outside and access search text.
+                                onSearch(_searchQuery, isForced: true);
+                              },
                             ),
                           ),
                         ),
@@ -281,13 +310,13 @@ List<ItemCard> itemCards = [
       "https://cdn.pixabay.com/photo/2017/07/20/18/40/apricots-2523272_960_720.jpg"),
   ItemCard("Raspberries", "320.00", "10", "11 Mar 2019",
       "https://cdn.pixabay.com/photo/2016/05/31/13/01/raspberries-1426859__340.jpg"),
-  ItemCard("Other", "320.00", "10", "02 Jan 2019",
+  ItemCard("Other", "820.00", "16", "02 Jan 2019",
       "https://cdn.pixabay.com/photo/2010/12/13/10/05/background-2277_960_720.jpg"),
-  ItemCard("Mixed", "320.00", "10", "31 Jan 2019",
+  ItemCard("Mixed", "140.00", "5", "31 Jan 2019",
       "https://cdn.pixabay.com/photo/2017/06/02/18/24/fruit-2367029_960_720.jpg"),
-  ItemCard("Raspberries", "320.00", "10", "1 Feb 2019",
+  ItemCard("Raspberries", "557.00", "3", "1 Feb 2019",
       "https://cdn.pixabay.com/photo/2016/10/22/20/34/wine-1761613_960_720.jpg"),
-  ItemCard("Blueberries", "320.00", "10", "19 May 2019",
+  ItemCard("Blueberries", "820.00", "2", "19 May 2019",
       "https://cdn.pixabay.com/photo/2017/04/29/09/51/blueberries-2270379_960_720.jpg"),
 ];
 
@@ -385,7 +414,7 @@ class ItemCard extends StatelessWidget {
                 height: 28.0,
               ),
               Text(
-                "\u20B9 125.00",
+                "\u20B9 ${double.parse(price) - (double.parse(price) * double.parse(discount)) / 100} ",
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -393,11 +422,11 @@ class ItemCard extends StatelessWidget {
               ),
               SizedBox(width: 20),
               Text(
-                " \u20B9 500.00",
+                "\u20B9 $price",
                 style: TextStyle(
-                  color: Colors.grey,
-                  fontWeight: FontWeight.normal,
-                ),
+                    color: Colors.grey,
+                    fontWeight: FontWeight.normal,
+                    decoration: TextDecoration.lineThrough),
               )
             ],
           )
