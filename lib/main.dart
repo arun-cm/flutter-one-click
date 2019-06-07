@@ -53,14 +53,16 @@ class _SearchState extends State<Search> {
   var searchQuery = "";
   var isVegetable = true;
 
-  var _searchQuery = "";
+  var _query = "";
 
   void onSearch(String query, {bool isForced = false}) {
-    this._searchQuery = query;
+    this._query = query;
 
     if (query.length > 7 || isForced) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ItemsListing()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => SearchResult(query: this._query)));
     }
   }
 
@@ -184,7 +186,7 @@ class _SearchState extends State<Search> {
                                 // define controller outside and dispose it
                                 // dispose controller inline vs outside ?
                                 // define a varible outside and access search text.
-                                onSearch(_searchQuery, isForced: true);
+                                onSearch(_query, isForced: true);
                               },
                             ),
                           ),
